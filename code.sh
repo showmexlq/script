@@ -11,7 +11,7 @@ dir_config=$dir_root/config
 dir_scripts=$dir_root/scripts
 dir_log=$dir_root/log
 dir_db=$dir_root/db
-dir_code=$dir_log/code
+
 
 ## 预设的仓库及默认调用仓库设置
 ## 将"repo=$repo1"改成repo=$repo2"或其他，以默认调用其他仓库脚本日志
@@ -25,7 +25,9 @@ repo6='Aaron-lv_sync_jd_scripts'                   #预设的 Aaron-lv 仓库
 repo7='smiek2221_scripts'                          #预设的 smiek2221 仓库
 repo8='okyyds_yydspure_master'
 repo9='shufflewzc_faker3_main'
+repo10='showmexlq_script_master'
 repo=$repo9                                       #默认调用 okyyds_yydspure_master 仓库脚本日志
+dir_code=$dir_log/$repo10_code
 
 ## 调试模式开关，默认是0，表示关闭；设置为1，表示开启
 DEBUG="1"
