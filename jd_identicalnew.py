@@ -54,7 +54,7 @@ def load_send() -> None:
 def get_tasklist() -> list:
     tasklist = []
     t = round(time.time() * 1000)
-    url = f"https://{ipport}/api/crons?searchValue=&t={t}"
+    url = f"http://{ipport}/api/crons?searchValue=&t={t}"
     response = requests.get(url=url, headers=headers)
     datas = json.loads(response.content.decode("utf-8"))
     if datas.get("code") == 200:
@@ -142,7 +142,7 @@ def reserve_task_only(
 
 def disable_duplicate_tasks(ids: list) -> None:
     t = round(time.time() * 1000)
-    url = f"https://{ipport}/api/crons/disable?t={t}"
+    url = f"http://{ipport}/api/crons/disable?t={t}"
     data = json.dumps(ids)
     headers["Content-Type"] = "application/json;charset=UTF-8"
     response = requests.put(url=url, headers=headers, data=data)
@@ -154,19 +154,17 @@ def disable_duplicate_tasks(ids: list) -> None:
 
 
 def get_token() -> str or None:
-    # try:
-    #     path = '/ql/config/auth.json'  # 设置青龙 auth文件地址
-    #     if not os.path.isfile(path):
-    #         path = '/ql/data/config/auth.json'  # 尝试设置青龙 auth 新版文件地址
-    #     with open(path, "r", encoding="utf-8") as f:
-    #         data = json.load(f)
-    # except Exception:
-    #     logger.info(f"❌无法获取 token!!!\n{traceback.format_exc()}")
-    #     send("💔禁用重复任务失败", "无法获取 token!!!")
-    #     exit(1)
-    return "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoieXIxSmtuaU5xUGVtay1rWXFpeE1fT3JuaHhsRzIyOVFxcmswcXBPWnhlYm1BZmxlQ2llcFlsR2xFNEpSLUZDX2ZCc3ZvZWx5TUd1QURvIiwiaWF0IjoxNjY1NTQ1MTY1LCJleHAiOjE2NjcyNzMxNjV9.kYiQpZC7LK6-HK4N-bmr0x-9e5R7nHcVxdbqyRl0Mc4Wtck4orNnogGpdEno1xBo"
-
-
+        try:
+        path = '/ql/config/auth.json'  # 设置青龙 auth文件地址
+        if not os.path.isfile(path):
+            path = '/ql/data/config/auth.json'  # 尝试设置青龙 auth 新版文件地址
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        logger.info(f"❌无法获取 token!!!\n{traceback.format_exc()}")
+        send("💔禁用重复任务失败", "无法获取 token!!!")
+        exit(1)
+    return data.get("token")
 if __name__ == "__main__":
     logger.info("===> 禁用重复任务开始 <===")
     load_send()
