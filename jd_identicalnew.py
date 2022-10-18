@@ -25,7 +25,7 @@ if not ipport:
     logger.info(
         "如果报错请在环境变量中添加你的真实 IP:端口\n名称：IPPORT\t值：127.0.0.1:5700\n或在 config.sh 中添加 export IPPORT='127.0.0.1:5700'"
     )
-    ipport = "localhost:5700"
+    ipport = "127.0.0.1:5700"
 else:
     ipport = ipport.lstrip("http://").rstrip("/")
 sub_str = os.getenv("RES_SUB", "shufflewzc_faker3_main&showmexlq_script_master")
@@ -39,6 +39,7 @@ headers = {
 
 def load_send() -> None:
     logger.info("加载推送功能中...")
+    logger.info(f"IPPORT环境变量为{ipport}")
     global send
     send = None
     cur_path = os.path.abspath(os.path.dirname(__file__))
@@ -146,25 +147,28 @@ def disable_duplicate_tasks(ids: list) -> None:
     data = json.dumps(ids)
     headers["Content-Type"] = "application/json;charset=UTF-8"
     response = requests.put(url=url, headers=headers, data=data)
+    logger.info(response)
     datas = json.loads(response.content.decode("utf-8"))
     if datas.get("code") != 200:
         logger.info(f"❌出错!!!错误信息为：{datas}")
     else:
         logger.info("🎉成功禁用重复任务~")
 
-
 def get_token() -> str or None:
-        try:
+    try:
         path = '/ql/config/auth.json'  # 设置青龙 auth文件地址
         if not os.path.isfile(path):
             path = '/ql/data/config/auth.json'  # 尝试设置青龙 auth 新版文件地址
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception:
+        with open(path, "r") as file:  # 上下文管理
+            auth = file.read()  # 读取文件
+            file.close()  # 关闭文件
+        data = json.loads(auth)# 使用 json模块读取
+        logger.info("json========"+data.get("token"))
+        return data.get("token")
+    except Exception as exc:
         logger.info(f"❌无法获取 token!!!\n{traceback.format_exc()}")
         send("💔禁用重复任务失败", "无法获取 token!!!")
         exit(1)
-    return data.get("token")
 if __name__ == "__main__":
     logger.info("===> 禁用重复任务开始 <===")
     load_send()
